@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/homeEventsFragment">
+
+    <!-- Fragment untuk EventDetail -->
+    <fragment
+        android:id="@+id/eventDetailFragment"
+        android:name="com.example.androidfundamental1.ui.fragments.detail.EventDetailFragment"
+        android:label="EventDetailFragment">
+        <argument
+            android:name="eventId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Fragment untuk Past Events -->
+    <fragment
+        android:id="@+id/pastEventsFragment"
+        android:name="com.example.androidfundamental1.ui.fragments.finish.PastEventsFragment"
+        android:label="PastEventsFragment">
+        <action
+            android:id="@+id/action_pastEventsFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+    <!-- Fragment untuk Upcoming Events -->
+    <fragment
+        android:id="@+id/upcomingEventsFragment"
+        android:name="com.example.androidfundamental1.ui.fragments.upcoming.UpcomingEventsFragment"
+        android:label="UpcomingEventsFragment">
+        <action
+            android:id="@+id/action_to_event_detail"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+    <!-- Fragment untuk Home Events -->
+    <fragment
+        android:id="@+id/homeEventsFragment"
+        android:name="com.example.androidfundamental1.ui.fragments.home.HomeEventsFragment"
+        android:label="HomeEventsFragment">
+        <action
+            android:id="@+id/action_homeEventsFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+    <!-- Fragment untuk Favorite Events -->
+    <fragment
+        android:id="@+id/favoriteEventsFragment"
+        android:name="com.example.androidfundamental1.ui.fragments.fav.FavoriteFragment"
+        android:label="FavoriteEventsFragment">
+        <action
+            android:id="@+id/action_favoriteEventsFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
+
+</navigation>
