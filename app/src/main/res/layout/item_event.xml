@@ -7,7 +7,7 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="6dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
             android:layout_marginTop="12dp"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorOnSurface"
             android:maxLines="2"
             android:ellipsize="end"
             android:gravity="center"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/category"
-            android:textColor="@color/purple"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="14sp" />
 
         <!-- Deskripsi Event -->
@@ -58,7 +58,7 @@
             android:ellipsize="end"
             android:maxLines="3"
             android:text="@string/event_summary"
-            android:textColor="@color/black" />
+            android:textColor="?attr/colorOnSurface" />
 
         <!-- Waktu Event -->
         <TextView
@@ -68,7 +68,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/begintime_endtime"
             android:textSize="12sp"
-            android:textColor="@android:color/black" />
+            android:textColor="?attr/colorOnSurface" />
 
         <!-- Nama Kota -->
         <TextView
@@ -78,7 +78,7 @@
             android:layout_marginTop="4dp"
             android:text="@string/city_name"
             android:textSize="12sp"
-            android:textColor="@android:color/black" />
+            android:textColor="?attr/colorOnSurface" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

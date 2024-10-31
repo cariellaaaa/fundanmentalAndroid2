@@ -1,86 +1,67 @@
 package com.example.androidfundamental1.ui.fragments.fav
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.androidfundamental1.R
 import com.example.androidfundamental1.adapters.FavoriteEventAdapter
-import com.example.androidfundamental1.api.RetrofitInstance
-import com.example.androidfundamental1.db.EventDatabase
-import com.example.androidfundamental1.models.Events
-import com.example.androidfundamental1.repo.EventRepo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.androidfundamental1.databinding.FragmentFavoriteBinding
+import com.example.androidfundamental1.models.FavoriteEntity
+import com.example.androidfundamental1.ui.vm.FavoriteViewModel
 
 class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
 
+    private var _binding: FragmentFavoriteBinding? = null
+    private val binding get() = _binding!!
     private lateinit var favoritesAdapter: FavoriteEventAdapter
-    private lateinit var recyclerView: RecyclerView
-    private var favoriteEvents: List<Events> = emptyList()
-    private lateinit var eventRepository: EventRepo
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var favoriteViewModel: FavoriteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_favorite, container, false)
-        recyclerView = view.findViewById(R.id.rvFavoritesEvent)
-        setupRecyclerView()
-        return view
+        _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
+        return binding.root
     }
-
-    private fun setupRecyclerView() {
-        favoritesAdapter = FavoriteEventAdapter(favoriteEvents, { event ->
-            val action = FavoriteFragmentDirections.actionFavoriteEventsFragmentToEventDetailFragment(event.id)
-            findNavController().navigate(action)
-        }, { eventId ->
-            removeFavorite(eventId) // Panggil removeFavorite saat ikon di klik
-        })
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = favoritesAdapter
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inisialisasi SharedPreferences
-        sharedPreferences = requireContext().getSharedPreferences("FavoritesPrefs", Context.MODE_PRIVATE)
+        favoriteViewModel = ViewModelProvider(this).get(FavoriteViewModel::class.java)
 
-        // Inisialisasi repository
-        val bangkitAPI = RetrofitInstance.api
-        val eventDatabase = EventDatabase.getDatabase(requireContext())
-        eventRepository = EventRepo(bangkitAPI, eventDatabase, sharedPreferences)
+        setupRecyclerView()
 
-        // Muat event favorit
-        loadFavoriteEvents()
-    }
-
-    private fun loadFavoriteEvents() {
-        CoroutineScope(Dispatchers.Main).launch {
-            val favoriteEventIds = eventRepository.getFavoriteEventIds()
-            Log.d("FavoriteFragment", "Favorite Event IDs: $favoriteEventIds")
-
-            favoriteEvents = withContext(Dispatchers.IO) {
-                eventRepository.getEventsByIds(favoriteEventIds)
+        favoriteViewModel.allFavorites.observe(viewLifecycleOwner) { favorites ->
+            favorites?.let {
+                favoritesAdapter.updateData(favorites) // Pastikan `updateData` sudah terimplementasi
             }
-            favoritesAdapter.updateData(favoriteEvents)
         }
     }
 
-    private fun removeFavorite(eventId: String) {
-        eventRepository.removeFavoriteEventId(eventId)  // Menggunakan EventRepo
-        loadFavoriteEvents()  // Muat ulang daftar favorit
+    private fun setupRecyclerView() {
+        favoritesAdapter = FavoriteEventAdapter(emptyList(), { favorite ->
+            val action = FavoriteFragmentDirections.actionFavoriteEventsFragmentToEventDetailFragment(favorite.id)
+            findNavController().navigate(action)
+        }, { favoriteId ->
+            removeFavorite(favoriteId)
+        })
+        binding.rvFavoritesEvent.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFavoritesEvent.adapter = favoritesAdapter
+    }
+
+    private fun removeFavorite(eventId: Int) {
+        val favoriteEntity = FavoriteEntity(id = eventId, name = "", date = "")
+        favoriteViewModel.removeFavorite(favoriteEntity)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

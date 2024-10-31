@@ -1,20 +1,19 @@
 <resources>
     <!-- Base application theme for Dark mode -->
     <style name="Base.Theme.AndroidFundamental1" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your theme colors for dark mode -->
         <item name="colorPrimary">@color/purple</item>
         <item name="colorPrimaryVariant">@color/purple</item>
         <item name="android:statusBarColor">@color/black</item>
 
         <!-- Surface colors for background in dark mode -->
-        <item name="colorSurface">@color/black</item>
+        <item name="colorSurface">@color/darkGrey</item>
         <item name="colorOnSurface">@color/white</item>
         <item name="colorSurfaceInverse">@color/white</item>
         <item name="colorOnSurfaceInverse">@color/black</item>
 
         <!-- Text colors -->
-        <item name="android:textColorPrimary">@color/textColorPrimary</item> <!-- Warna untuk teks utama -->
-        <item name="android:textColorSecondary">@color/textColorSecondary</item> <!-- Warna untuk teks sekunder -->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
     </style>
 
     <!-- Use the base theme for your main theme -->

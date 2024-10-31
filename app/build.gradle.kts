@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("androidx.navigation.safeargs.kotlin")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -46,36 +49,60 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.firebase.components)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.firebase.functions.ktx)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Architectural Components
-    implementation(libs.androidx.lifecycle.runtime.ktx) // Use the version catalog reference
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
     // Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
-    // Kotlin Extensions and Coroutines support for Room
     implementation(libs.androidx.room.ktx)
+
     // Coroutines
-    implementation(libs.kotlinx.coroutines.core) // Use the version catalog reference
-    implementation(libs.kotlinx.coroutines.android) // Use the version catalog reference
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
     // Coroutine Lifecycle Scopes
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
     // Retrofit
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.retrofit.converter.gson)
     implementation(libs.squareup.okhttp3.logging.interceptor)
+
     // Navigation Components
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
     // Glide
     implementation(libs.bumptech.glide)
     ksp(libs.bumptech.glide.compiler)
 
+    // Gson
     implementation(libs.google.code.gson)
+
+    // Image Loading (Coil)
     implementation(libs.io.coil.kt)
+
+    implementation(libs.dagger.hilt)   // Correct reference to dagger-hilt
+    kapt(libs.hilt.compiler)            // Correct reference to hilt-compiler
+    kapt(libs.androidx.hilt.work.compiler)  // Correct reference to androidx-hilt-work-compiler
+
+    // Data Store
+    implementation (libs.androidx.datastore.preferences)
+
+
 }
 

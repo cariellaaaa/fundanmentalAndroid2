@@ -27,4 +27,8 @@ interface DetailEventDAO {
     // Menghapus Events berdasarkan objek Events
     @Delete
     suspend fun deleteEvent(events: Events)
+
+
 }
+
+

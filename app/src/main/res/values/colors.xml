@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">#FFFFFFFF</color>
     <color name="purple">#593C8F</color>
     <color name="black">#000000</color>
-    <color name="textColorSecondary">#FF000000</color> <!-- Warna teks sekunder di mode terang -->
-    <color name="textColorPrimary">#FFFFFF</color> <!-- Hitam untuk teks utama -->
+    <color name="darkGrey">#333333</color>
+
+    <color name="textColorPrimary">#FF000000</color> <!-- Hitam untuk teks utama -->
+    <color name="textColorSecondary">#333333</color> <!-- Abu-abu untuk teks sekunder -->
 </resources>

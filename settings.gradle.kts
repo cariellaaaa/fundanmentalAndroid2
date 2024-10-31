@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 }
 
 
+
 rootProject.name = "AndroidFundamental1"
 include(":app")
  

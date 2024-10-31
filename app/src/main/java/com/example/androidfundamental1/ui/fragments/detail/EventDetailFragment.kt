@@ -6,10 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -18,11 +18,15 @@ import com.example.androidfundamental1.R
 import com.example.androidfundamental1.api.RetrofitInstance
 import com.example.androidfundamental1.databinding.FragmentEventDetailBinding
 import com.example.androidfundamental1.db.EventDatabase
+import com.example.androidfundamental1.models.FavoriteEntity
 import com.example.androidfundamental1.repo.EventRepo
 import com.example.androidfundamental1.ui.vm.EventViewModel
 import com.example.androidfundamental1.ui.vm.EventViewModelProviderFactory
-import com.example.androidfundamental1.util.SharedPreferencesHelper
+import com.example.androidfundamental1.ui.vm.FavoriteViewModel
 import com.example.androidfundamental1.util.Status
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
     private var _binding: FragmentEventDetailBinding? = null
@@ -30,8 +34,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
     private lateinit var viewModel: EventViewModel
     private val args: EventDetailFragmentArgs by navArgs()
 
-    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
-    private lateinit var favoriteIcon: ImageView
+    private lateinit var favoriteViewModel: FavoriteViewModel
     private var eventId: Int = 0  // ID event sebagai Int
 
     override fun onCreateView(
@@ -53,6 +56,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         val viewModelProviderFactory = EventViewModelProviderFactory(eventRepo)
         viewModel = ViewModelProvider(this, viewModelProviderFactory)[EventViewModel::class.java]
 
+        // Inisialisasi FavoriteViewModel
+        favoriteViewModel = ViewModelProvider(this)[FavoriteViewModel::class.java]
+
         // Mendapatkan eventId dari argumen
         eventId = args.eventId
         binding.progressBar.visibility = View.VISIBLE
@@ -61,9 +67,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         // Ambil detail event dari ViewModel
         viewModel.getEventDetail(eventId).observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
-                Status.LOADING -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
+                Status.LOADING -> binding.progressBar.visibility = View.VISIBLE
                 Status.SUCCESS -> {
                     binding.progressBar.visibility = View.GONE
                     val detailEvent = resource.data
@@ -82,44 +86,49 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                         Glide.with(this).load(event.mediaCover).into(binding.ivEventImage)
                         binding.tvEventOwner.text = getString(R.string.event_owner_format, event.ownerName)
                         binding.fab.isEnabled = true
+
+                        // Tombol untuk membuka link event
                         binding.fab.setOnClickListener {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.link))
                             startActivity(intent)
+                        }
+
+                        // Periksa apakah event adalah favorit
+                        favoriteViewModel.isFavorite(eventId).observe(viewLifecycleOwner) { isFavorite ->
+                            updateFavoriteIcon(isFavorite)
+                        }
+
+                        // Klik ikon favorit
+                        binding.ivFavoriteIcon.setOnClickListener {
+                            val favoriteEntity = FavoriteEntity(id = eventId, name = event.name, date = event.beginTime)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                if (favoriteViewModel.isFavoriteNow(eventId)) {
+                                    favoriteViewModel.removeFavorite(favoriteEntity)
+                                    // Update icon setelah menghapus
+                                    updateFavoriteIcon(false)
+                                } else {
+                                    favoriteViewModel.addFavorite(favoriteEntity)
+                                    // Update icon setelah menambahkan
+                                    updateFavoriteIcon(true)
+                                }
+                            }
                         }
                     }
                 }
                 Status.ERROR -> {
                     binding.progressBar.visibility = View.GONE
+                    Log.e("EventDetailFragment", "Error fetching event detail: ${resource.message}")
                 }
             }
         }
-
-        // Inisialisasi SharedPreferencesHelper dan ikon favorit
-        sharedPreferencesHelper = SharedPreferencesHelper(requireContext())
-        favoriteIcon = view.findViewById(R.id.iv_fav)
-
-        // Cek apakah event ini sudah difavoritkan
-        updateFavoriteIcon(sharedPreferencesHelper.isFavorite(eventId.toString()))
-
-        // Tambah atau hapus event dari favorit saat icon favorit diklik
-        favoriteIcon.setOnClickListener {
-            val isFavorite = sharedPreferencesHelper.isFavorite(eventId.toString())
-            if (isFavorite) {
-                eventRepo.removeFavoriteEventId(eventId.toString())
-            } else {
-                eventRepo.addFavoriteEventId(eventId.toString())
-            }
-            updateFavoriteIcon(!isFavorite)  // Perbarui ikon
-        }
-
     }
 
     // Fungsi untuk memperbarui ikon favorit
     private fun updateFavoriteIcon(isFavorite: Boolean) {
         if (isFavorite) {
-            favoriteIcon.setImageResource(R.drawable.baseline_favorite_24) // Ikon event favorit
+            binding.ivFavoriteIcon.setImageResource(R.drawable.favourite_full)
         } else {
-            favoriteIcon.setImageResource(R.drawable.baseline_favorite_border_24) // Ikon belum favorit
+            binding.ivFavoriteIcon.setImageResource(R.drawable.favourite_border)
         }
     }
 
@@ -128,3 +137,4 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         _binding = null
     }
 }
+
