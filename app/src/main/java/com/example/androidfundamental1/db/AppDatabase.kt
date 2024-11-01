@@ -8,8 +8,10 @@ import com.example.androidfundamental1.models.FavoriteEntity
 
 @Database(entities = [FavoriteEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
-    abstract fun favoriteDao(): FavoriteDao
+//    abstract fun favoriteDao(): FavoriteDao
     abstract fun getFavoriteEventDao(): FavoriteDao // Tambahkan DAO untuk Favorite
+    //cobak uninstall dl appnya yg di hpmu
+    //okk kak4/, mau coba running dgn hpku ya kak?4//masukin ke favoritenya gmn?
 
     companion object {
         @Volatile

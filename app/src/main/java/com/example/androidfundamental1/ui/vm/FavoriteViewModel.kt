@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.androidfundamental1.db.AppDatabase
 import com.example.androidfundamental1.db.EventDatabase
 import com.example.androidfundamental1.models.Events
 import com.example.androidfundamental1.models.FavoriteEntity
@@ -11,7 +12,7 @@ import com.example.androidfundamental1.repo.FavoriteRepository
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(application: Application) : AndroidViewModel(application) {
-    private val favoriteDao = EventDatabase.getDatabase(application).getFavoriteEventDao()
+    private val favoriteDao = AppDatabase.getDatabase(application).getFavoriteEventDao()
     private val repository: FavoriteRepository = FavoriteRepository(favoriteDao) // Inisialisasi repository
     val allFavorites: LiveData<List<FavoriteEntity>> = repository.getAllFavorites()
 
@@ -28,6 +29,7 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
             repository.addFavorite(favorite) // Tambahkan ke repository
         }
     }
+    //
 
     fun removeFavorite(favorite: FavoriteEntity) {
         viewModelScope.launch {
